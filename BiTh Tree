@@ -20,7 +20,7 @@ typedef struct BiThrNode
 
 //全局变量，始终张志祥刚刚访问的节点
 BiThrTree pre;
-
+//
 
 //创建一颗二叉树，前序遍历
 BiThrTree CreateBiThrTree(BiThrTree *T)
