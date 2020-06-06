@@ -1,0 +1,139 @@
+//现在开始我要对二叉查找树进行学习
+#include<stdio.h>
+#include<stdlib.h>
+#define ElementType int
+//下面开始定义函数，变量
+
+#ifndef _Tree_H
+
+struct TreeNode;
+typedef struct TreeNode *Position;
+typedef struct TreeNode *SearchTree;
+
+SearchTree MakeEmpty(SearchTree T);
+Position Find(ElementType X,SearchTree T);
+Position FindMin(SearchTree T);
+Position FindMax(SearchTree T);
+SearchTree Insert(ElementType X,SearchTree T);
+SearchTree Delete(ElementType X,SearchTree T);
+ElementType Retrieve(Position P);
+#endif // _Tree_H
+
+/*place in the implementation file*/
+struct TreeNode
+{
+    ElementType Element;
+    SearchTree Left;
+    SearchTree Right;
+};
+//初始化完成
+
+//主函数
+int main()
+{
+    //按需求进行操作，特别说明，这里创建的指针不用给空间，下面插入的时候给
+    return 0;
+}
+
+//创建空树，没什么用！！！！！
+SearchTree MakeEmpty(SearchTree T)
+{
+    if(T!=NULL)
+    {
+        MakeEmpty(T->Left);
+        MakeEmpty(T->Right);
+        free(T);
+    }
+    return NULL;
+}
+//查找,返回的是相应位置的指针
+Position Find(ElementType X,SearchTree T)
+{
+    if(T==NULL)
+        return NULL;
+    if(X > T->Element)
+        return Find(X,T->Left);
+    if(X > T->Element)
+        return Find(X,T->Right);
+    else
+        return T;
+}
+
+//查找最小的，用递归
+Position FindMin(SearchTree T)
+{
+    if(T==NULL)
+        return NULL;
+    if(T->Left==NULL)
+        return T;
+    else
+        return FindMin(T->Left);
+}
+
+//查找最大的，不用递归
+Position FindMax(SearchTree T)
+{
+    if(T==NULL)
+        return NULL;
+    while(T->Right!=NULL)
+        T = T->Right;
+    return T;
+}
+
+//对树进行 插入
+SearchTree Insert(ElementType x,SearchTree T)
+{
+    if(T==NULL)
+    {
+        T = (SearchTree)malloc(sizeof(struct TreeNode));
+        if(T==NULL)
+        {
+            printf("我一滴都没有了QAQ\n");
+            return T;
+        }
+        else
+        {
+            T->Element = x;
+            T->Left = T->Right = NULL;
+        }
+    }
+    else if(x < T->Element)
+        T->Left = Insert(x,T->Left);
+    else if(x > T->Element)
+        T->Right = Insert(x,T->Right);
+    return T;
+    //这个时候就说明，要不就是本来是NULL，加上了，要么就是T这个位置已经是X了，就直接返回就行
+    }
+
+
+//对树进行删除！难点
+//此处删除的时候，有两个儿子时代替的是右子树最小的
+SearchTree Delete(ElementType x,SearchTree T)
+{
+    SearchTree Tmpcell;
+    if(T==NULL)
+        printf("element不存在\n");
+    else if(x > T->Element)
+        T->Right = Delete(x,T->Right);
+    else if(x < T->Element)
+        T->Left = Delete(x,T->Left);
+    //上面两步用来寻找要删除的，因为删完那一侧就变了，所以正好返回变了之后的左或者右
+    else if(T->Left && T->Right)
+    {
+        Tmpcell = FindMin(T->Right);
+        T->Element = Tmpcell->Element;
+        T->Right = Delete(T->Element,T->Right);
+    }
+    //上为删除节点有两个儿子时，先用Tmpcell找到其右子树最小的，代替他之后，再把右子树变成删后的
+    else
+    {
+        Tmpcell = T;
+        if(T->Left==NULL)
+            T = T->Right;
+        else if(T->Right==NULL)
+            T = T->Left;
+        free(Tmpcell);
+    }
+    //上为只有一个儿子或者一个都没有的时候，直接让自己的下一级顶替自己就行，也实用于两个儿子时删除右子树最小的那个
+    return T;
+}
