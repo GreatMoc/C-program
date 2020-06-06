@@ -1,0 +1,112 @@
+//线索二叉树，把一些空闲出来的前驱后继指针来指向上一层或者下一层的元素
+//
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef char ElemType;
+
+//线索储存标志位
+//Link(0):表示指向左右孩子的指针
+//Thread(1):表示指向前去后继的线索
+typedef enum {Link, Thread} PointerTag;
+
+typedef struct BiThrNode
+{
+    char data;
+    struct BiThrNode *lchild,*rchild;
+    PointerTag ltag;
+    PointerTag rtag;
+} BiThrNode,*BiThrTree;
+
+
+//全局变量，始终张志祥刚刚访问的节点
+BiThrTree pre;
+
+
+//创建一颗二叉树，前序遍历
+BiThrTree CreateBiThrTree(BiThrTree *T)
+{
+    char c;
+
+    scanf("%c",&c);
+    if( ' '==c )
+    {
+        return NULL;
+    }
+    else
+    {
+        *T = (BiThrNode *)malloc(sizeof(BiThrNode));
+        (*T)->data = c;
+        (*T)->ltag = Link;
+        (*T)->rtag = Link;
+
+        (*T)->lchild = CreateBiThrTree(&(*T)->lchild);
+        (*T)->rchild = CreateBiThrTree(&(*T)->rchild);
+    }
+    return *T;
+}
+//中序遍历线索化
+void InThreading(BiThrTree T)
+{
+    if(T)
+    {
+        InThreading(T->lchild);
+
+        if(!T->lchild)
+        {
+            T->ltag = Thread;
+            T->lchild = pre;//如果左孩子没有东西，就让他指前驱元素
+        }
+
+        if( !pre->rchild)
+        {
+            pre->rtag = Thread;
+            pre->rchild = T;//如果T的前驱元素没有右子树，那么他右边的指针指向他后继
+        }
+
+        pre = T;
+
+        InThreading(T->rchild);
+    }
+}
+
+void visit( char c)
+{
+    printf("%c",c);
+}
+//中序遍历二叉树，非递归
+void InOrderTraverse( BiThrTree T)
+{
+    if(T==NULL)
+        return ;
+    InOrderTraverse(T->lchild);
+    printf("%c ",T->data);
+    InOrderTraverse(T->rchild);
+}
+
+
+void InOrderThreading(BiThrTree *p,BiThrTree T )
+{
+    *p = (BiThrNode *)malloc(sizeof(BiThrNode));
+    (*p)->ltag = Link;
+    (*p)->rtag = Thread;
+    (*p)->rchild = *p;
+    if( !T )
+    {
+        (*p)->lchild = T;
+        pre = *p;
+        InThreading(T);
+        pre->rchild = *p;
+        pre->rtag = Thread;
+        (*p)->rchild = pre;
+    }
+
+}
+int main()
+{
+    BiThrTree p , T = NULL;
+    T = CreateBiThrTree( &T);
+    InOrderTraverse(T);
+    InOrderThreading(&p , T );
+    return 0;
+}
