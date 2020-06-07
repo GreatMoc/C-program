@@ -1,0 +1,139 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define MAXVEX 20
+
+//边表节点声明
+typedef struct EdgeNode
+{
+    int adjvex; //边表贮存临界顶点的下标
+    int weight;  //存放到该顶点的权值
+    struct EdgeNode *next;
+}EdgeNode;
+
+//顶点表节点声明
+typedef struct VertexNode
+{
+    int in;//入度数量
+    int data;//顶点中数据
+    EdgeNode *firstedge;//连边表找其出度
+}VertexNode,Adjlist[MAXVEX];
+
+typedef struct
+{
+    Adjlist adjlist;
+    int numVertexes, numEdges;
+}graphAdjList,*GraphAdjList;
+
+int *etv,*ltv; //最早开始时间，最晚开始时间
+int *stack;    //用于储存拓扑序列的队列
+int top;
+
+
+//拓扑排序存顺序用的队列
+int TopologicalSort(GraphAdjList GL)
+{
+    EdgeNode *e;
+    int i,k,gettop;
+    int front = 0;//队头
+    int rear = 0;//队尾
+    int count = 0;//，最后检测是否有环
+    int *queue1;//存入度为0顶点
+
+    queue1 = (int *)malloc(GL->numVertexes * sizeof(int));
+
+    for(i=0 ; i< GL->numVertexes ;i++)
+    {
+        if(!(GL->adjlist[i].in))
+        {
+            queue1[rear++] = i;
+        }
+    }//先第一次引导他把入度为0的压入队列
+
+
+    //初始化etv和拓扑序列栈
+    top = 0;
+    etv = (int *)malloc(GL->numVertexes*sizeof(int));
+    for(i=0;i<GL->numVertexes;i++)
+        etv[i] = 0;
+    stack = (int *)malloc(GL->numVertexes*sizeof(int));
+
+
+    while(rear != front)//只要队列不空就不出
+    {
+        gettop = queue1[front++];
+        printf("%d -> ",GL->adjlist[gettop].data);
+        stack[top++] = gettop;//压入拓扑队列中
+        count++;
+
+        for(e = GL->adjlist[gettop].firstedge;e;e = e->next)
+        {
+            k = e->adjvex;
+            if(!(--GL->adjlist[k].in))
+            {
+                queue1[rear++] = k;
+            }
+
+            if(etv[gettop]+e->weight > etv[k])
+            {
+                etv[k] = etv[gettop] + e->weight; //最早开始时间
+                //找他前面路径的最长的时间，这样才能开始
+            }
+        }
+    }
+
+    if(count < GL->numVertexes) //入度为0的比顶点数小说明有环不要
+    {
+        return -1;
+    }
+    return 1;
+}
+
+//求关键路径，已知GL这个有向图、etv和拓扑排序队列
+void CriticalPath(GraphAdjList GL)
+{
+    EdgeNode *e;
+    int i,gettop,k,j;
+    int ete,lte;
+
+    //调用改进后的拓扑队列queue2和etv
+    TopologicalSort(GL);
+
+    //初始化ltv都为汇点的时间
+    ltv = (int *)malloc(GL->numVertexes * sizeof(int));
+    for( i=0 ;i<GL->numVertexes ;i++)
+    {
+        ltv[i] = etv[GL->numVertexes-1];
+    }
+
+    //从汇点倒过来逐个计算ltv
+    while( top )
+    {
+        gettop = stack[top--];
+        for(e=GL->adjlist[gettop].firstedge;e;e = e->next)
+        {
+            k = e->adjvex;
+            if((ltv[k]-e->weight)<ltv[gettop])
+            {
+                ltv[gettop] = ltv[k] - e->weight;
+            }
+        }
+
+    }
+
+    //通过etv和ltv求ete和lte
+    for(j=0;j<GL->numVertexes;j++)
+    {
+        for(e = GL->adjlist[j].firstedge;e;e = e->next)
+        {
+            k = e->adjvex;//出度元素的下标
+            ete = etv[j]; //上个点的最早结束时间
+            lte = ltv[k] - e->weight; // 减完同上
+            //此处概念较为模糊，可结合实际的AOE图分析
+            if(ete == lte)
+            {
+                printf("<%d,%d> length: %d\n",GL->adjlist[j].data,GL->adjlist[k].data,e->weight);
+            }
+        }
+    }
+}
