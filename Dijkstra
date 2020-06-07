@@ -1,0 +1,54 @@
+#define MAXVEX  9
+#define INFINITY   65535
+/*这个算法用来求最短路径，两点间的但是要遍历到所有的点的
+    具体思路就是找一个顶点周围的权值，找最小的走
+    而且通过最后一个小循环有效判断了假最短（就是只看一步是最短，但两步之和
+    就比一步长的情况，这时候就只走两步的一步，踩到就行然后回来走一步到的那个）
+*/
+
+typedef int Patharc[MAXVEX];                //用来存路径上每个点前驱下标
+typedef int ShortPathTable[MAXVEX];    //存到当前这个点的最短路径权值和
+//当然在还没走过那个顶点之前这里放的是主线上已走过的点到这个点的最小权值
+
+void ShortestPath_Dijkstar(MGraph G,int V0,Patharc *P,ShortPathTable *D)
+{
+    int v,w,k,min;
+    int final[MAXVEX];
+
+    //初始化
+    for(v=0;v<G.numVertexes;v++)
+    {
+        int final[v]=0;             //0代表没找到最短路径，1为找到
+        (*D)[v] = G.arc[V0][v];     //存放当前顶点最短路径，不管最后这儿能不能走通
+        (*p)[v] = 0;                //存放前驱下标，初始为00
+    }
+    final[V0]=1; //初始点不用路径
+
+    //开始主要代码，最后一个小循环是关键
+    for(v=1;w<G.numVertexes;v++)
+    {
+        min = INFINITY;
+        for( w=0;w<G.numVertexes;w++)
+        {
+            if( !final[w] && (*D)[w]<min)
+            {
+                k = w;
+                min = (*D)[w];
+            }
+        }
+        final[k] = 1;
+
+        //进行最关键的修正，因为有的可能一步比两步短
+        /*所以还是先按少的走，最后有冲突了再看哪个的当前最小路径更短就走哪个
+            因为min就是上一个节点当前最短路径+下一个节点权值就是下一个的当前
+            最短路径*/
+        for(w=0;w<G.numVextexes;w++)
+        {
+            if(!final[w] && (min + G.arc[k][w] < (*D)[w]) )
+            {
+                (*D)[w] = min + G.arc[k][w];
+                (*P)[w] = k;
+            }
+        }
+    }
+}
