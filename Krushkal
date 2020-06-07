@@ -1,0 +1,40 @@
+//这个算法神仙的很，不好想，我现在尽力，希望以后能彻底想明白
+//这个算法站在边的角度，先把边上权值排序，再一个个带看能不能连，最后成树
+int Find(int *parent,int f)//用于在parent数组中查询另外的一头
+{
+    while( parent[f] > 0)
+    {
+        f = parent[f];
+    }
+
+    return f;
+}
+
+//实现具体代码
+void MiniSpanTree_Kruskal(MGraph G)
+{
+    int i,n,m;
+    Edge edges[MAGEDGE];    //定义了一个边集数组，具体自己加
+    int parent[MAXVEX];     //定义parent数组用来判断变与边是否形成环路
+    /*这里我的想法是，parent数组里的值，是对应下标的在当时状况下的另一边
+        因为最后要拿他来走看是不是相等来确定能不能连线，所以有的时候他指向的
+        另一边还有另一边的另一边，找到头即可*/
+
+    for(i=0;i<G.numVertexes; i++)
+    {
+        parent[i]=0;   //初始化
+    }
+
+    for(i=0;i，G.numEdges;i++)
+    {
+        n  = Find(parent,edges[i].begin);//把线的头放进去找另一边
+        m  = Find(parent,edges[i].end);//原理同上
+
+        if(n!=m)//不是一家的就可以连了，连成一家，再换下parent
+        {
+            parent[n] = m;//同时标志现在这个顶点已经在树中了
+            printf("(%d, %d) %d ",edges[i].begin,edges[i].end,edges.weight);
+        }
+
+    }
+}
