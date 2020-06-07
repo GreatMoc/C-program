@@ -33,6 +33,26 @@ void PostOrderTraverse(BiTree T)//后序遍历
     PostOrderTraverse(T->rchild);
     printf("%c ",T->data);
 }
+
+void LevelorderTraverse(BiTree T)//层序遍历
+{
+    if(T==NULL)
+        return ;
+    BiTree queueline[101],root;  
+    //此处基础设定为100个，但是有需求再改，有能力用队列链表
+    int front=0,rear=0;
+    queueline[rear++] = T;
+
+    while(front != rear)
+    {
+        root = queueline[rear--];
+        printf(" %d",root->data);
+        if(root->lchild) queueline[rear++] = root->lchild;
+        if(root->rchild) queueline[rear++] = root->rchild;
+    }
+
+}
+
 BiTree CreateBiTree(BiTree *T)//此为中序创建法
 {
     char ch;
@@ -57,6 +77,7 @@ int main()
     PreOrderTraverse (T);
     InOrderTraverse(T);
     PostOrderTraverse(T);
+    LevelorderTraverse(T);
     return 0;
 }
 
