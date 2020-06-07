@@ -1,0 +1,45 @@
+#define MAXVEX 9
+#define INFINITY   65535
+
+typedef int Pathmatirx[MAXVEX][MAXVEX];
+typedef int ShortPathTable[MAXVEX][MAXVEX];
+
+void ShortestPath_Floyd(MGraph G,Pathmatirx *P,ShortPathTable *D)
+{
+    int v,w,k;
+
+    //初始化D和P
+    for(v=0;v<G.numVertexes;v++)
+    {
+        for(w=0;w<G.numvertexes;w++)
+        {
+            (*D)[v][w] = G.matirx[v][w];
+            (*P)[v][w] = w ;  //这儿先按下标来初始化
+        }
+    }
+
+    //主代码,有种无限套娃的感觉
+    for(k=0;k<G.numVertexes;k++)
+    {
+        for(v=0;v<G.numVertexes;k++)
+        {
+            for(w=0;w<G.numVertexes;w++)
+            {
+                /*接下来就是套娃阶段，不管多长，都可以看做是一个长度和两个
+                长度之和的比较，只要走两步比一步小，那就不走这一步。范围是
+                全的，不会落下因为三个循环肯定都能走到的。
+
+                而如果一开始就不能一步到的那就是max肯定就换了，以后有更
+                短的就两步就把这个“之前由两步构成的一步”再替换掉
+
+                而对于p来说，只能用前半段的前驱，然后这个前驱可能也是他的
+                一半的前半段前驱，一次类推就是他前一步的下标*/
+                if((*D[v][w] > (*D)[v][k] + (*D)[k][w]))
+                {
+                    (*D)[v][w] = (*D)[v][k] + (*D)[k][w];
+                    (*P)[v][w] = (*P)[v][k];
+                }
+            }
+        }
+    }
+}
