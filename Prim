@@ -1,0 +1,64 @@
+//prim算法求最小生成树（仅相关代码）
+
+/*这里面没有的但是需要的一个图G，用它的numVertexes顶点个数，G.arc数组是
+    带权邻接矩阵;还有MAXVEX也是顶点数，从0开始*/
+
+
+void MinSpanTree_Prim(MGraph G)
+{
+    int min,i,j,k;
+    int adjvex[MAXVEX];       //保存与该顶点相关顶点的下标
+    int lowcost[MAXVEX];      //保存与该顶点相关顶点间边的权值
+
+    lowcost[0] = 0;
+    adjvex[0] = 0;
+
+    //初始化
+    for(i=1;i<G.numVertexes;i++)
+    {
+        lowcost[i] = G.arc[0][i];
+        //G.arc是邻接矩阵数组，lowcost每次遍历到新一行都要换成相应邻接数组
+        adjvex[i] = 0;    //这两行都是从v0开始，进行初始化
+    }
+
+    //开始构造真正的最小生成树过程
+    for(i=1;i<G.numVertexes;i++)
+    {
+        min = 65535;   //min用来存邻接矩阵中的正无穷
+        j=1; k=0;
+
+        //遍历全部顶点,当然当前点就不用了
+        while(j<G.numVertexes)
+        {
+            //找到跟当前顶点相连的最小权值
+            if(lowcost[j]!=0 && lowcost[j]<min)
+            {
+                min = lowcost[j];
+                k = j;      // 把找到的最小权值下标记下来用
+            }
+            j++;
+        }
+        //从上一个循环出来，min带着当前顶点最小权值，k带着相连下标
+
+        //输出当前顶点边中权值最小的边
+        printf("(%d,%d) ",adjvex[k],k);
+        lowcost[k] = 0; // 这两个顶点之间权值用完了就归0了
+
+        //邻接矩阵第k行再逐个遍历，将第k行矩阵与之前拿出的矩阵比较
+        //如果是用过的，或者自己就是0不加
+        //如果是大于等于原来同位置的，那就是远的，不加
+        /*同样，如果小的话我就用它，不仅要把权值留下来，他的下标也要留下来
+            刻在adjvex中相应的位置*/
+        for(j=1;G.numVertexes;j++)
+        {
+            if( lowcost[j]!=0 && G.arc[k][j] < lowcost[j])
+            {
+                lowcost[j] = G.arc[k][j];
+                adjvex[j] = k;
+            }
+        }
+        /*到这里，我得到的是一个跟k位置那一行融合之后的lowcost，下一轮用它再
+        找最小权值，然后已经找过的也不用找，找到下一个最小权值之后再重复这些
+        过程继续输出，往下继续融合*/
+    }
+}
