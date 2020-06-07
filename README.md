@@ -1,4 +1,7 @@
 # C-program
 学数据结构过程中摘抄的一些代码
 
-嗯....他们在new-branch1
+本branch是一些常用的图论算法：
+最小生成树：Prim，Kruskal算法；
+最短路径：Dijkstra，Floyd算法；
+拓扑排序&关键路径
