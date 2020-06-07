@@ -1,0 +1,41 @@
+#include <stdio.h>
+void main()
+{
+	int a[10],num,low,high,mid,i,flag=0;
+	printf("input the array:");
+	for(i=0;i<=9;i++)
+	{
+		scanf("%d",&a[i]);
+	}
+	printf("input finding number:");
+	scanf("%d",&num);
+	low=0;
+	high=9;
+	while(low<=high)
+	{
+		mid=(low+high)/2;
+		//mid = low + ((key - a[low])/a[high]-a[low])*(high - low);//插值查找
+		printf("low=%d,mid=%d,high=%d\n",low,mid,high);
+		if(a[mid]>num)
+		{
+			high=mid-1;
+		}
+		if(a[mid]<num)
+		{
+			low=mid+1;
+		}
+		if(a[mid]==num)
+		{
+			flag=1;
+			break;
+		}
+	}
+	if(flag)
+	{
+		printf("found!\n");
+	}
+	else
+	{
+		printf("not found!\n");
+	}
+}
