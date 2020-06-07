@@ -1,0 +1,76 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define HASHSIZE 12                    //此处以12位表长，可自行改
+#define NULLKEY -32768                //定义一个不可能的数用来初始
+
+typedef struct
+{
+    int *elem;    // 数据元素基址，动态分配数组
+    int count;    // 当前数据元素个数
+}HashTable;
+
+int InitHashTable(HashTable *H)
+{
+    int i;
+    H->count = HASHSIZE;
+    H->elem = (int *)malloc(HASHSIZE * sizeof(int));
+    if( !H->elem)
+    {
+        return -1;
+    }
+    for(i=0; i< HASHSIZE; i++ )
+    {
+        H->elem[i] = NULLKEY;
+    }
+    return 0;
+}
+
+//使用除留余数法
+int Hash(int key)
+{
+    return key % HASHSIZE;
+}
+
+//插入关键字
+void InsertHash(HashTable *H,int key)
+{
+    int addr;
+    addr = Hash(key);
+
+    while(H->elem[addr]!=NULLKEY)
+    {
+        addr = (addr + 1) % HASHSIZE;
+        //此处采用最简单的线性解决崇冲突，可改
+    }
+    H->elem[addr] = key;
+}
+
+int SearchHash(HashTable *H, int key, int *addr) //这里直接带地址就不用专门返回地址了
+{
+    *addr = Hash(key);
+
+    while(H->elem[*addr] != key)
+    {
+        *addr = (*addr + 1)% HASHSIZE;   //对应上面的解决方法
+        if(H->elem[*addr]==NULLKEY || *addr == Hash(key))
+        //要么是到了个没人占的地址，要么是循环一圈回来都没有，那就没有
+        {
+                return -1;
+        }
+    }
+    return 0;
+}
+
+int main()
+{
+    HashTable *H;
+    InitHashTable(H);
+    int key,i;
+    for(i=0;i<HASHSIZE;i++)
+    {
+        scanf("%d",&key);
+        InsertHash(H,key);
+    }
+    return 0;
+}
