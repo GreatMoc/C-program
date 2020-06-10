@@ -1,0 +1,57 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct Node *Tree;
+struct Node
+{
+    char Data;
+    Tree lchild;
+    Tree rchild;
+};
+
+Tree CreateBiTree(char *pre,char *in,int len);
+int Height(Tree t);
+
+int main()
+{
+    Tree t = NULL;
+    char in[51],pre[51];
+    int num,height;
+    scanf("%d ",&num);
+    scanf("%s\n%s",pre,in);
+    t = CreateBiTree(pre,in,num);
+    height = Height(t);
+    printf("%d\n",height);
+    return 0;
+}
+
+Tree CreateBiTree(char *pre,char *in,int len)
+{
+    Tree t;
+    int i;
+    if(len == 0) return NULL;
+    t = (Tree )malloc(sizeof(struct Node));
+    t->Data = pre[0];
+    for(i=0;i<len;i++)
+    {
+        if(pre[0] == in[i])
+            break;
+    }
+    t->lchild = CreateBiTree(pre+1,in,i);
+    t->rchild = CreateBiTree(pre+i+1,in+i+1,len-1-i);
+//先序第一个是根，后面i个是左子树；中序i左边都是左子树，当前左子树共i个节点
+//先序第一个是根，根+i+1开始是右子树；中序i右边都是右子树，当前右子树有len-（i+1）个节点
+
+    return t;
+}
+
+int Height(Tree t)
+{
+    int height;
+    if(t == NULL)
+    {
+        return 0;
+    }
+    height = (Height(t->lchild) > Height(t->rchild))? Height(t->lchild):Height(t->rchild);
+    return 1 + height;
+}
