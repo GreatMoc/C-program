@@ -14,7 +14,7 @@ void main()
 	while(low<=high)
 	{
 		mid=(low+high)/2;
-		//mid = low + ((key - a[low])/a[high]-a[low])*(high - low);//插值查找
+		//mid = low + (num-a[low])/(a[high]-a[low])*(high - low);//插值查找
 		printf("low=%d,mid=%d,high=%d\n",low,mid,high);
 		if(a[mid]>num)
 		{
