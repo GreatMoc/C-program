@@ -1,16 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 //很简单的排序，就先找所有的里面的最小的然后跟前面的交换就好
-
 typedef struct Node{
     int *r;
     int length;
 }Node;
-
 Node Init(Node L, int n);
-
 Node SelectSort(Node L);
-
 int main()
 {
     int i,n;
@@ -25,14 +21,12 @@ int main()
     printf("\n");
     return 0;
 }
-
 Node Init(Node L , int n)
 {
     L.length = n;
     L.r = (int *)malloc(sizeof(int)*n);
     return L;
 }
-
 Node SelectSort(Node L)
 {
     int i,j,temp,min;
